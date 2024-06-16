@@ -1,7 +1,9 @@
 <template lang="">
   <div>
-    <h1>
-      CRYPTO VIEWER
-    </h1>
+    <base-search
+      search-input-id="base-input"
+      :tickets-titles="['BTC', 'XRP', 'ETH', 'DOGE', 'GEI_COIN']"
+      @found="(foundTicketTitle: string) => console.log(foundTicketTitle)"
+    />
   </div>
 </template>

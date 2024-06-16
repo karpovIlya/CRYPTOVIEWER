@@ -14,13 +14,13 @@
 			"
   >
     <nuxt-link to="/">
-      <img
-        src="@/assets/icons/project_logo.svg"
-        alt="Logo"
-        class="w-10"
-      >
+      <logo-icon />
     </nuxt-link>
 
     <theme-switcher />
   </header>
 </template>
+
+<script setup lang="ts">
+import LogoIcon from '~/components/icons/LogoIcon.vue'
+</script>
