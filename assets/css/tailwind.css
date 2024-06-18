@@ -6,4 +6,8 @@
   .base-color {
     @apply bg-gray-700 hover:bg-gray-800 dark:bg-blue-400 dark:hover:bg-blue-500;
   }
+
+  .reverse-color {
+    @apply dark:bg-gray-700 dark:hover:bg-gray-800 bg-blue-400 hover:bg-blue-500;
+  }
 }

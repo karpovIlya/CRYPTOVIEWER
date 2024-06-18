@@ -22,20 +22,31 @@
 				md:grid-cols-2
 				lg:grid-cols-3
 				gap-4
+				mb-4
 			"
     >
       <ticket-item
-        v-for="ticketObj in props.ticketsList"
+        v-for="ticketObj in displayedTickets"
         :key="ticketObj.title"
         :ticket="ticketObj"
         @delete="() => emits('delete', ticketObj)"
       />
     </div>
+
+    <numeration-list
+      v-if="ticketsList.length > ticketsPerPage"
+      v-model:page="currentPage"
+      :total-items="ticketsList.length"
+      :items-per-page="ticketsPerPage"
+      :range="1"
+    />
   </section>
 </template>
 
 <script setup lang="ts">
 import TicketItem from '~/components/TicketList/TicketItem.vue'
+import NumerationList from '~/components/Pagination/NumerationList.vue'
+
 import { type ITicket } from '~/interfaces/Ticket'
 
 interface IProps {
@@ -48,4 +59,14 @@ interface IEmits {
 
 const props = defineProps<IProps>()
 const emits = defineEmits<IEmits>()
+
+const currentPage = ref(1)
+const ticketsPerPage = 6
+
+const displayedTickets = computed(() => {
+	const endIndex = currentPage.value * ticketsPerPage
+	const startIndex = endIndex - ticketsPerPage
+
+	return props.ticketsList.slice(startIndex, endIndex)
+})
 </script>
