@@ -28,6 +28,7 @@
         v-for="ticketObj in props.ticketsList"
         :key="ticketObj.title"
         :ticket="ticketObj"
+        @delete="() => emits('delete', ticketObj)"
       />
     </div>
   </section>
@@ -41,5 +42,10 @@ interface IProps {
 	ticketsList: ITicket[]
 }
 
+interface IEmits {
+	(event: 'delete', payload: ITicket): void
+}
+
 const props = defineProps<IProps>()
+const emits = defineEmits<IEmits>()
 </script>

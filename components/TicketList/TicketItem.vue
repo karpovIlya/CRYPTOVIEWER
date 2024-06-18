@@ -21,7 +21,10 @@
       {{ props.ticket.price }}
     </div>
 
-    <base-button button-color="red">
+    <base-button
+      button-color="red"
+      @click="() => emits('delete', props.ticket)"
+    >
       Delete
     </base-button>
   </div>
@@ -34,5 +37,10 @@ interface IProps {
 	ticket: ITicket
 }
 
+interface IEmits {
+	(event: 'delete', payload: ITicket): void
+}
+
 const props = defineProps<IProps>()
+const emits = defineEmits<IEmits>()
 </script>

@@ -5,7 +5,10 @@
       :tickets-titles="listRes?.Data ? Object.keys(listRes?.Data) : []"
       @add="pushTicket"
     />
-    <tickets-list :tickets-list="selectedTickets" />
+    <tickets-list
+      :tickets-list="selectedTickets"
+      @delete="removeTicket"
+    />
   </div>
 </template>
 
@@ -33,6 +36,7 @@ const { data: listRes, } = await useFetch<IListApiResponse>(
 	`${config.public.BASE_URL}/data/blockchain/list?api_key=${config.public.API_KEY}`
 )
 const selectedTickets: globalThis.Ref<ITicket[]> = ref([])
+const ticketKeyInStorage = 'tickets'
 
 const pushTicket = (newTicket: ITicket): void => {
 	const isAvailableTicket = selectedTickets.value.find((ticket: ITicket) => {
@@ -47,4 +51,21 @@ const pushTicket = (newTicket: ITicket): void => {
 		selectedTickets.value.push(newTicket)
 	}
 }
+
+const removeTicket = (deletionTicket: ITicket) => {
+	selectedTickets.value = selectedTickets.value.filter((ticket: ITicket) => {
+		return ticket.title !== deletionTicket.title
+	})
+}
+
+watch(selectedTickets, () => {
+	localStorage.setItem(ticketKeyInStorage, JSON.stringify(selectedTickets.value))
+}, { deep: true, })
+
+onMounted(() => {
+	const savedTicketsJson = localStorage.getItem(ticketKeyInStorage)
+	const savedTickets: ITicket[] = savedTicketsJson ? JSON.parse(savedTicketsJson) : []
+
+	selectedTickets.value = savedTickets
+})
 </script>
