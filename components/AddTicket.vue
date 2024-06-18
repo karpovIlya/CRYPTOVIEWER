@@ -16,7 +16,7 @@
         v-model="searchText"
         :input-id="props.searchInputId"
         input-placeholder="Search"
-        @keyup.enter="foundTicket"
+        @keyup.enter="addTicket"
       />
     </div>
 
@@ -25,6 +25,7 @@
         v-if="filtredTickets.length"
         class="
 					p-4
+					mb-2
 					bg-gray-700
 					dark:bg-blue-400
 					shadow-lg
@@ -52,11 +53,19 @@
         </transition-group>
       </div>
     </transition>
+
+    <base-button
+      button-color="base"
+      @click="addTicket"
+    >
+      Add ticket
+    </base-button>
   </div>
 </template>
 
 <script setup lang="ts">
 import SearchIcon from '~/components/icons/SearchIcon.vue'
+import { type ITicket } from '~/interfaces/Ticket'
 
 interface IProps {
 	searchInputId: string,
@@ -64,11 +73,23 @@ interface IProps {
 }
 
 interface IEmits {
-	(event: 'found', payload: string): void
+	(event: 'add', payload: ITicket): void
+}
+
+interface IErrorResponse {
+	Response: 'Error',
+	Message: string,
+	HasWarning: boolean,
+	Type: number
+}
+
+interface IPriceResponse {
+	USD: number
 }
 
 const props = defineProps<IProps>()
 const emits = defineEmits<IEmits>()
+const config = useRuntimeConfig()
 const searchText = ref('')
 
 const filtredTickets = computed(() => {
@@ -85,8 +106,30 @@ const usedHint = (event: Event) => {
 	searchText.value = target.textContent ?? ''
 }
 
-const foundTicket = () => {
-	emits('found', searchText.value)
+const addTicket = async () => {
+	const response: IErrorResponse | IPriceResponse = await $fetch(
+		`${config.public.BASE_URL}/data/price`, {
+			headers: {
+				authorization: config.public.BASE_URL,
+			},
+			params: {
+				'?fsym': searchText.value,
+				tsyms: 'USD',
+			},
+		})
+
+	if ('USD' in response) {
+		const newTicket = {
+			title: searchText.value.toUpperCase(),
+			price: response.USD,
+			currency: 'USD',
+		} as ITicket
+
+		emits('add', newTicket)
+	} else {
+		alert('Oooops.... Something went wrong =(')
+	}
+
 	searchText.value = ''
 }
 </script>
